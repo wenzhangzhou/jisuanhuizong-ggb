@@ -1,0 +1,82 @@
+SMOKE TEST — screw-selector-web
+Source Excel: /workspace/螺钉选型_D6及以下_Nm_有出处.xlsx (openpyxl data_only)
+Result: 33 passed, 0 failed
+
+=== Checks ===
+PASS  自攻 Ø4 PC/ABS d0  | got 3.2, expected 3.2
+PASS  自攻 Ø4 PC/ABS D  | got 8
+PASS  自攻 Ø4 PC/ABS te  | got 8
+PASS  自攻 Ø4 PC/ABS 选型MA非数值  | MA=按Covestro/T/CSAE试验后计算
+PASS  自攻 Ø2 PP+GF30 d0  | got 1.44
+PASS  自攻 Ø2 PP+GF30 近邻标记  | nature=近邻类推
+PASS  自攻 Ø5 PC/ABS d0  | got {'d1': 5, 'material': 'PC/ABS', 'coeffSource': 'Bossard F.079「ABS和PC混合物」', 'holeCoeff': 0.8, 'd0': 4, 'odCoeff': 2, 'D': 10, 'engageCoeff': 2, 'te': 10, 'nature': '原文牌号', 'note': '与Bossard「ABS和PC混合物」对应；系数×d1，手册未限制≤Ø4'}
+PASS  自攻 Ø5 PC/ABS D  | got 10
+PASS  自攻 Ø5 PC/ABS te  | got 10
+PASS  自攻 Ø6 PP+LGF20 d0  | got 4.32
+PASS  自攻 Ø4.5 PC/ABS d0  | got 3.6
+PASS  EJOT Ø3 dbMin  | got {'d1': 3, 'db': 2.55, 'dbMin': 2.4, 'dbMax': 2.7, 'teMin': 6, 'dT': 6, 'source': 'EJOT EVO PT flyer'}
+PASS  EJOT Ø3 dbMax  | got {'d1': 3, 'db': 2.55, 'dbMin': 2.4, 'dbMax': 2.7, 'teMin': 6, 'dT': 6, 'source': 'EJOT EVO PT flyer'}
+PASS  EJOT Ø3 teMin  | got {'d1': 3, 'db': 2.55, 'dbMin': 6, 'dT': 6, 'source': 'EJOT EVO PT flyer'}
+PASS  扭矩矩阵 Ø4 PP+GF30 为空  | got None
+PASS  扭矩矩阵 Ø4 PC/ABS 仅指针非数值  | got '见「扭矩个例」ABS算例\n(≠直接等于PC/ABS)'
+PASS  PEM M4 ABS Torque-out=2  | got {'thread': 'M4', 'baseMaterial': 'ABS', 'torqueOut': 2, 'meaning': '嵌件扭出极限', 'usage': '须试验', 'source': 'PEM sidata', 'note': None}
+PASS  PEM M4 PC Torque-out=2.3  | got {'thread': 'M4', 'baseMaterial': 'PC', 'torqueOut': 2.3, 'meaning': '嵌件扭出极限', 'usage': '须试验', 'source': 'PEM sidata', 'note': None}
+PASS  PEM M5-1 ABS=5.1  | got {'thread': 'M5-1', 'baseMaterial': 'ABS', 'torqueOut': 5.1, 'meaning': '嵌件扭出极限', 'usage': '装配扭矩 << 5.1，须试验', 'source': 'PEM sidata 超声/热熔表', 'note': '短嵌件 M5-1'}
+PASS  机牙 Ø3 PP+GF30 缺数据  | got 缺数据待测
+PASS  Excel↔JSON Ø3 PC/ABS d0  | json=2.4 excel=2.4
+PASS  Excel↔JSON Ø3 PC/ABS D  | json=6 excel=6
+PASS  Excel↔JSON Ø3 PC/ABS te  | json=6 excel=6
+PASS  出处清单 11 条  | got 11
+PASS  个例 ABS Tr=2.28  | got {'id': 1, 'material': 'ABS', 'connection': '汽车自攻螺钉 d1=4 mm', 'conditions': '塑料柱 dL=3.2 mm，IE=8 mm；团标附录算例 α=0.5', 'valueType': '推荐拧紧扭矩 Tr', 'value': 2.28, 'applicable': '否——材料是ABS不是PC/ABS；柱几何固定；须按同方法自测', 'source': 'T/CSAE 193-2021 附录D：Tr=1.04+0.5×(3.69−1.22)=2.28；文中并给约(1.9±0.3)现场参考表述'}
+PASS  TR Ø4 PC/ABS te=7.2  | got {'d1': 4, 'material': 'PC/ABS', 'coeffSource': 'TR Plas-Tech 30 Installation Guide ABS/PC', 'holeCoeff': 0.8, 'd0': 3.2, 'odCoeff': 2, 'D': 8, 'engageCoeff': 1.8, 'te': 7.2, 'nature': '原文牌号', 'note': 'TR 表 ABS/PC；te系数与Bossard略有差异(1.8 vs 2.0)'}
+PASS  文件存在 index.html
+PASS  文件存在 styles.css
+PASS  文件存在 app.js
+PASS  文件存在 data.js
+PASS  文件存在 data/data.json
+PASS  文件存在 data/sources.json
+PASS  文件存在 README.md
+PASS  data.js 以 window.SCREW_DATA 开头
+
+=== Sample lookups (expected from Excel) ===
+  [塑料自攻 | Ø4 | PC/ABS]
+    expected: d0=3.2, D=8, te=8 (Bossard); MA=无公开装配扭矩；个例 ABS Tr=2.28 仅参考
+    lookup:  d0=3.2, D=8, te=8, nature=原文牌号
+    EJOT:   db=3.2–3.6, te≥8, dT=8
+    MA:      无公开装配扭矩数据
+  [塑料自攻 | Ø2 | PP+GF30]
+    expected: d0=1.44, D=4, te=4 (近邻 PP-TV20); MA=无公开
+    lookup:  d0=1.44, D=4, te=4, nature=近邻类推
+    EJOT:   db=1.6–1.8, te≥4, dT=4
+    MA:      无公开装配扭矩数据
+  [塑料自攻 | Ø5 | PC/ABS]
+    expected: d0=4, D=10, te=10; EJOT db 4.0–4.5
+    MA:      无公开装配扭矩数据
+  [塑料自攻 | Ø4.5 | PP+LGF20]
+    expected: d0=3.24, D=9, te=9 (近邻); MA=无公开
+    MA:      无公开装配扭矩数据
+  [机牙+嵌件 | Ø4 | PC/ABS]
+    expected: 几何按嵌件厂; Torque-out ABS 2 / PC 2.3 N·m; MA=无公开
+    PEM rows: [('M4', 'ABS', 2), ('M4', 'PC', 2.3)]
+    MA:      无公开装配扭矩数据
+  [机牙+嵌件 | Ø5 | PP+GF30]
+    expected: 无该基体嵌件扭出数据; MA=无公开
+    PEM rows: [('M5-1', 'ABS', 5.1), ('M5-1', 'PC', 6.2), ('M5-2', 'ABS', 6.8), ('M5-2', 'PC', 9)]
+    MA:      无公开装配扭矩数据
+
+=== Data mapping ===
+依据与边界 → meta.disclaimer + boundaries panel
+出处清单 → data/sources.json + sources table
+选型总表 → selection[] (status/MA text)
+螺柱凸台几何 R4–R55 → geometry[]; R59–R66 → ejot[]
+扭矩矩阵_塑料自攻 → torquePlastic (cells mostly empty)
+扭矩个例_有出处 → torqueCases[]
+扭矩矩阵_机牙 → torqueMachine.rows (PEM Torque-out)
+试验记录_待填 → not embedded (empty template)
+
+=== Ambiguous / notes ===
+- GF/LGF 几何采用 Bossard PP-TV20 / TR PP TF20 近邻系数，Excel 已标「近邻类推」，UI 同步标橙标签。
+- Ø4 PC/ABS 扭矩矩阵指向「见扭矩个例 ABS算例」——材料是 ABS 不是 PC/ABS，UI 作个例展示并声明不可直接用。
+- 选型总表机牙 d1=3.5 对 PC/ABS 也写「缺数据待测」（PEM 无 M3.5）；d1=2/2.5/3/4/5/6 的 PC/ABS 指向 PEM 表。
+- Covestro Table1 仅孔径（Ø5），无 D/te；单独成行，不覆盖 Bossard 推荐。
+- EJOT 几何不分牌号，与材料行并存展示。
