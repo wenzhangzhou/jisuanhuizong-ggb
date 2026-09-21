@@ -2,9 +2,7 @@ name: Assemble screw app.js
 on:
   push:
     paths:
-      - 'screw/_src_part0.js'
-      - 'screw/_src_part1.js'
-      - 'screw/_src_part2.js'
+      - 'screw/app.js.gz.b64'
       - '.github/workflows/assemble-screw-app.yml'
   workflow_dispatch:
 permissions:
@@ -14,11 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Concatenate parts into screw/app.js
+      - name: Decode gzip+base64 into screw/app.js
         run: |
-          cat screw/_src_part0.js screw/_src_part1.js screw/_src_part2.js > screw/app.js
+          base64 -d screw/app.js.gz.b64 | gunzip > screw/app.js
           wc -c screw/app.js
-      - name: Commit if changed
+          python3 -c "import hashlib,pathlib; b=pathlib.Path('screw/app.js').read_bytes(); print(len(b), hashlib.sha256(b).hexdigest())"
+      - name: Commit assembled app.js
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -26,6 +25,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No change"
           else
-            git commit -m "build: assemble full screw/app.js from source parts (~22KB)"
+            git commit -m "build: assemble full screw/app.js from gzip payload (~22KB)"
             git push
           fi
