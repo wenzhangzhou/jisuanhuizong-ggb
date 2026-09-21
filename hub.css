@@ -1,0 +1,92 @@
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --ink: #1a2332;
+  --muted: #5a6a7a;
+  --line: #d8dee6;
+  --accent: #1f4e79;
+  --accent-soft: #e8f0f8;
+  --warn: #8a5a00;
+  --warn-bg: #fff6e0;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(26, 35, 50, 0.08);
+  --font: "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.5;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 1rem 1rem 2.5rem; }
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+.app-header .wrap { padding-top: 0; padding-bottom: 0; }
+h1 { margin: 0 0 0.25rem; font-size: 1.4rem; font-weight: 650; color: var(--accent); }
+.subtitle { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.banner {
+  background: var(--warn-bg);
+  border: 1px solid #e8c878;
+  color: var(--warn);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+@media (max-width: 700px) {
+  .cards { grid-template-columns: 1fr; }
+}
+.card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.35rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 14px rgba(31, 78, 121, 0.12);
+  transform: translateY(-1px);
+}
+.card-kicker {
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.35rem;
+}
+.card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: var(--ink);
+}
+.card p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.card-action {
+  font-size: 0.9rem;
+  font-weight: 650;
+  color: var(--accent);
+}
+.app-footer {
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
