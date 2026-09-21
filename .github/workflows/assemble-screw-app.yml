@@ -1,0 +1,31 @@
+name: Assemble screw app.js
+on:
+  push:
+    paths:
+      - 'screw/_src_part0.js'
+      - 'screw/_src_part1.js'
+      - 'screw/_src_part2.js'
+      - '.github/workflows/assemble-screw-app.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Concatenate parts into screw/app.js
+        run: |
+          cat screw/_src_part0.js screw/_src_part1.js screw/_src_part2.js > screw/app.js
+          wc -c screw/app.js
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add screw/app.js
+          if git diff --staged --quiet; then
+            echo "No change"
+          else
+            git commit -m "build: assemble full screw/app.js from source parts (~22KB)"
+            git push
+          fi
