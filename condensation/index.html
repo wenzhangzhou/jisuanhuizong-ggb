@@ -1,1 +1,111 @@
-placeholder
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>冰箱箱体防凝露校核</title>
+  <meta name="description" content="根据环境温湿度与发泡/VIP厚度，校核冰箱箱体外表面是否满足防凝露要求。纯前端在线计算。" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="wrap">
+      <p style="margin:0 0 0.5rem"><a href="../index.html" style="color:#1f4e79;text-decoration:none;font-size:0.9rem">← 返回计算汇总</a></p>
+      <h1>冰箱箱体防凝露校核</h1>
+      <p class="subtitle">环境温湿度 + 发泡 / 发泡+VIP 厚度 → 外表面温度 vs 露点 · 纯前端 · 可公开访问</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="banner" role="note">
+      <strong>说明：</strong>
+      本工具为稳态一维传热简化校核，用于方案初判；未计入门封、结构热桥、强迫对流等。结果仅供工程参考，不作合格保证。
+    </div>
+
+    <section class="panel">
+      <h2>输入条件</h2>
+      <div class="controls">
+        <label class="field">环境温度 Ta (°C)
+          <input id="ta" type="number" step="0.1" value="32" />
+        </label>
+        <label class="field">相对湿度 RH (%)
+          <input id="rh" type="number" step="1" min="1" max="100" value="80" />
+        </label>
+        <label class="field">箱内温度 Ti
+          <select id="tiMode">
+            <option value="5">冷藏 5°C</option>
+            <option value="-18" selected>冷冻 −18°C</option>
+            <option value="custom">自定义…</option>
+          </select>
+        </label>
+        <label class="field" id="tiCustomWrap" hidden>自定义箱内温度 (°C)
+          <input id="tiCustom" type="number" step="0.1" value="0" />
+        </label>
+        <label class="field">发泡厚度 (mm)
+          <input id="df" type="number" step="1" min="1" value="60" />
+        </label>
+        <label class="field">保温结构
+          <select id="vipMode">
+            <option value="foam" selected>仅发泡</option>
+            <option value="foam_vip">发泡 + VIP</option>
+          </select>
+        </label>
+        <label class="field" id="dvWrap" hidden>VIP 厚度 (mm)
+          <input id="dv" type="number" step="0.5" min="0" value="15" />
+        </label>
+      </div>
+      <div class="row-actions">
+        <button type="button" class="btn" id="resetBtn">重置默认</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>校核结果</h2>
+      <div id="verdict" class="verdict"></div>
+      <div id="result" class="metrics"></div>
+    </section>
+
+    <section class="panel">
+      <details>
+        <summary>高级参数（导热系数 / 对流系数 / 安全裕度）</summary>
+        <div class="controls" style="margin-top:0.85rem">
+          <label class="field">发泡 λf (W/(m·K))
+            <input id="lf" type="number" step="0.001" value="0.022" />
+          </label>
+          <label class="field">VIP λv (W/(m·K))
+            <input id="lv" type="number" step="0.001" value="0.005" />
+          </label>
+          <label class="field">外侧换热 ho (W/(m²·K))
+            <input id="ho" type="number" step="0.1" value="10" />
+          </label>
+          <label class="field">内侧换热 hi (W/(m²·K))
+            <input id="hi" type="number" step="0.1" value="8" />
+          </label>
+          <label class="field">安全裕度 Δ (°C)
+            <input id="margin" type="number" step="0.1" value="2" />
+          </label>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel">
+      <details open>
+        <summary>计算公式说明</summary>
+        <div class="formula-block">
+          <p><strong>露点</strong>（Magnus 近似）：由 Ta、RH 计算 Td。</p>
+          <p><strong>热流</strong>：q = (Ta − Ti) / (1/ho + δf/λf + δv/λv + 1/hi)</p>
+          <p><strong>外表面温度</strong>：Ts = Ta − q / ho</p>
+          <p><strong>判定</strong>：Ts > Td + Δ → 满足（防凝露）；否则不满足。</p>
+          <p>厚度输入为 mm，计算时换算为 m。无 VIP 时 δv 项为 0。</p>
+        </div>
+      </details>
+    </section>
+
+    <footer class="app-footer">
+      单位：温度 °C · 厚度 mm · λ 为 W/(m·K) · 静态页，可 GitHub Pages 公开
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
