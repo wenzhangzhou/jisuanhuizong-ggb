@@ -26,7 +26,9 @@ python3 -m http.server 8080
 
 ## GitHub Pages
 
-将本目录内容推送到仓库（例如 `docs/` 或 `gh-pages` 分支根目录），在仓库 Settings → Pages 启用即可。无需构建步骤。
+预期地址：https://wenzhangzhou.github.io/screw-selector/
+
+启用方式（若尚未开启）：仓库 **Settings → Pages → Build and deployment → Source** 选 **Deploy from a branch**，Branch 选 `main`，Folder 选 `/ (root)`，Save。本仓库根目录已含静态站文件与 `.nojekyll`，无需构建。纯静态，无需构建步骤。
 
 ## 数据来源
 
