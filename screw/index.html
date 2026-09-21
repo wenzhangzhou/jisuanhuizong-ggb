@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>≤Ø6 螺钉选型 — 公开证据汇总</title>
+  <meta name="description" content="塑料自攻 / 机牙嵌件螺钉选型：孔径、凸台、旋合与有出处扭矩汇总。仅公开数据，非设计保证。" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="wrap">
+      <p style="margin:0 0 0.5rem"><a href="../index.html" style="color:#1f4e79;text-decoration:none;font-size:0.9rem">← 返回计算汇总</a></p>
+      <h1>≤Ø6 螺钉选型（证据汇总）</h1>
+      <p class="subtitle">塑料自攻几何 · 机牙嵌件脱出扭矩 · 全部数值可追溯至公开手册/标准</p>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="banner" role="note">
+      <strong>声明：</strong>
+      <span id="disclaimer">仅汇总公开供应商/标准数据，非设计保证；空值需试验或供应商 CALC；GF/LGF 几何可能为最邻近材料近似</span>
+    </div>
+    <section class="panel">
+      <h2>选型条件</h2>
+      <div class="controls">
+        <label class="field">紧固方式
+          <select id="fastening" aria-label="紧固方式"></select>
+        </label>
+        <label class="field">公称直径 d1 (mm)
+          <select id="d1" aria-label="公称直径"></select>
+        </label>
+        <label class="field">材料
+          <select id="material" aria-label="材料"></select>
+        </label>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>推荐结果</h2>
+      <div id="result"></div>
+    </section>
+    <section class="panel" id="methods"></section>
+    <section class="panel">
+      <h2>依据与边界</h2>
+      <div id="boundaries"></div>
+    </section>
+    <section class="panel">
+      <details class="sources-panel" open>
+        <summary>出处清单</summary>
+        <div id="sources-body"></div>
+      </details>
+    </section>
+    <footer class="app-footer">
+      <span id="updated"></span>
+      · 单位：扭矩 N·m；几何 mm
+      · 纯静态页，可离线打开或托管于 GitHub Pages
+      · 源数据：Excel「螺钉选型_D6及以下_Nm_有出处.xlsx」（openpyxl data_only）
+    </footer>
+  </main>
+  <script src="data.loader.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
