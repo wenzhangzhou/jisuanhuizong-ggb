@@ -1,1 +1,118 @@
-!function(){"use strict";function i(i){if(i){var e=function(i){return document.querySelector(i)},t=function(i){return String(null==i?"—":i).replace(/[&<>"']/g,(function(i){return{"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[i]}))},s=function(i,e){i.innerHTML=e.map((function(i){return"<option>"+t(i)+"</option>"})).join("")},a=e("#fastening"),n=e("#d1"),d=e("#material"),r=e("#result");e("#disclaimer")&&i.meta&&(e("#disclaimer").textContent=i.meta.disclaimer||""),e("#updated")&&i.meta&&(e("#updated").textContent="数据更新日期："+(i.meta.updated||"")),s(a,i.options.fastenings||[]),s(n,(i.options.d1||[]).map(String)),s(d,i.options.materialsPrimary||[]),a.value=(i.options.fastenings||[])[0]||"",n.value="4",d.value="PC/ABS",[a,n,d].forEach((function(i){i.addEventListener("change",v)}));var c=e("#methods");c&&i.torquePlastic&&i.torquePlastic.methods&&(c.innerHTML="<h2>扭矩取值方法（须试验）</h2>"+i.torquePlastic.methods.map((function(i){return'<div class="formula">'+t(i)+"</div>"})).join(""));var l=e("#boundaries");l&&i.boundaries&&i.boundaries.items&&(l.innerHTML=i.boundaries.items.map((function(i){return'<div class="cite"><strong>'+t(i.key)+"</strong>："+t(i.value)+"</div>"})).join(""));var o=e("#sources-body");o&&i.sources&&(o.innerHTML='<table class="data"><thead><tr><th>#</th><th>类型</th><th>文献</th><th>链接</th></tr></thead><tbody>'+i.sources.map((function(i){return"<tr><td>"+t(i.id)+"</td><td>"+t(i.type)+"</td><td>"+t(i.title)+'</td><td><a href="'+t(i.link)+'" target="_blank" rel="noopener">打开</a></td></tr>'})).join("")+"</tbody></table>"),v()}else document.body.innerHTML='<p style="padding:2rem">无法加载数据</p>';function v(){var e=a.value,s=Number(n.value),c=d.value,l=(i.geometry||[]).filter((function(i){return Number(i.d1)===s&&i.material===c})),o=(i.ejot||[]).find((function(i){return Number(i.d1)===s})),v="";if(e.indexOf("自攻")>=0||e.indexOf("塑料")>=0){var u=l[0];v+='<div class="metrics">',v+='<div class="metric"><div class="label">推荐孔径 d0</div><div class="value">'+(u?u.d0:"—")+'<span class="unit">mm</span></div><div class="src">'+t(u&&u.coeffSource)+"</div></div>",v+='<div class="metric"><div class="label">凸台外径 D</div><div class="value">'+(u?u.D:o?o.dT:"—")+'<span class="unit">mm</span></div><div class="src">有出处几何；近邻材料须试验</div></div>',v+='<div class="metric"><div class="label">旋合长度 te</div><div class="value">'+(u?u.te:o?o.teMin:"—")+'<span class="unit">mm</span></div><div class="src">EJOT te≥2×d1</div></div>',v+='<div class="metric"><div class="label">装配扭矩 MA</div><div class="value" style="font-size:1rem;color:var(--empty)">无公开装配扭矩数据</div><div class="src">须按实际组合试验</div></div></div>',l.length>1&&(v+='<div class="block"><h3>其它几何出处</h3><ul>'+l.slice(1).map((function(i){return"<li>"+t(i.coeffSource)+" → d0="+i.d0+", D="+i.D+", te="+i.te+" ("+t(i.nature)+")</li>"})).join("")+"</ul></div>")}else{var m={2:"M2",2.5:"M2.5",3:"M3",4:"M4",5:"M5-1",6:"M6-1"}[s]||"",f=(i.torqueMachine&&i.torqueMachine.rows||[]).filter((function(i){return String(i.thread)===m||0===String(i.thread).indexOf(m)}));5===s&&(f=(i.torqueMachine&&i.torqueMachine.rows||[]).filter((function(i){return 0===String(i.thread).indexOf("M5")}))),6===s&&(f=(i.torqueMachine&&i.torqueMachine.rows||[]).filter((function(i){return 0===String(i.thread).indexOf("M6")}))),v+='<div class="metrics"><div class="metric"><div class="label">几何</div><div class="value" style="font-size:1rem">按嵌件厂规范</div><div class="src">孔径、凸台、有效螺纹按嵌件厂资料</div></div>',v+='<div class="metric"><div class="label">装配扭矩 MA</div><div class="value" style="font-size:1rem;color:var(--empty)">无公开装配扭矩数据</div><div class="src">Torque-out ≠ 装配扭矩</div></div></div>',v+='<div class="block"><h3>PEM 嵌件脱出扭矩（≠装配扭矩）</h3><p>以下是失效上限，装配扭矩必须更低并做应用试验。</p><div class="pem-grid">',v+=f.map((function(i){return'<div class="pem-card"><div class="mat">'+t(i.thread)+" · "+t(i.baseMaterial)+'</div><div class="to">'+t(i.torqueOut)+' <span class="unit">N·m</span></div><div class="label-to">嵌件脱出扭矩</div><div class="cite">'+t(i.source)+"</div></div>"})).join(""),v+="</div></div>"}r.innerHTML=v}}window.SCREW_DATA?i(window.SCREW_DATA):window.addEventListener("screw-data-ready",(function(){i(window.SCREW_DATA)}))}();
+(function () {
+  'use strict';
+
+  function esc(s) {
+    return String(s == null ? '—' : s)
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"');
+  }
+
+  function fill(sel, items) {
+    sel.innerHTML = (items || []).map(function (v) {
+      return '<option value="' + esc(v) + '">' + esc(v) + '</option>';
+    }).join('');
+  }
+
+  function start(D) {
+    if (!D || !D.options || !D.options.fastenings) {
+      document.body.innerHTML = '<p style="padding:2rem;color:#b00">数据不完整，无法选型</p>';
+      return;
+    }
+    var f = document.querySelector('#fastening');
+    var d1 = document.querySelector('#d1');
+    var mat = document.querySelector('#material');
+    var result = document.querySelector('#result');
+    if (!f || !d1 || !mat || !result) return;
+
+    var disc = document.querySelector('#disclaimer');
+    var upd = document.querySelector('#updated');
+    if (disc && D.meta) disc.textContent = D.meta.disclaimer || '';
+    if (upd && D.meta) upd.textContent = '数据更新日期：' + (D.meta.updated || '');
+
+    fill(f, D.options.fastenings);
+    fill(d1, (D.options.d1 || []).map(String));
+    fill(mat, D.options.materialsPrimary || []);
+    f.value = D.options.fastenings[0];
+    d1.value = '4';
+    mat.value = 'PC/ABS';
+
+    var methods = document.querySelector('#methods');
+    if (methods && D.torquePlastic && D.torquePlastic.methods) {
+      methods.innerHTML = '<h2>扭矩取值方法（须试验）</h2>' +
+        D.torquePlastic.methods.map(function (m) {
+          return '<div class="formula">' + esc(m) + '</div>';
+        }).join('');
+    }
+    var bounds = document.querySelector('#boundaries');
+    if (bounds && D.boundaries && D.boundaries.items) {
+      bounds.innerHTML = D.boundaries.items.map(function (it) {
+        return '<div class="cite"><strong>' + esc(it.key) + '</strong>：' + esc(it.value) + '</div>';
+      }).join('');
+    }
+    var src = document.querySelector('#sources-body');
+    if (src && D.sources) {
+      src.innerHTML = '<table class="data"><thead><tr><th>#</th><th>类型</th><th>文献</th><th>链接</th></tr></thead><tbody>' +
+        D.sources.map(function (s) {
+          return '<tr><td>' + esc(s.id) + '</td><td>' + esc(s.type) + '</td><td>' + esc(s.title) +
+            '</td><td><a href="' + esc(s.link) + '" target="_blank" rel="noopener">打开</a></td></tr>';
+        }).join('') + '</tbody></table>';
+    }
+
+    function render() {
+      var mode = f.value;
+      var dia = Number(d1.value);
+      var material = mat.value;
+      var geos = (D.geometry || []).filter(function (g) {
+        return Number(g.d1) === dia && g.material === material;
+      });
+      var ej = (D.ejot || []).find(function (e) { return Number(e.d1) === dia; });
+      var html = '';
+      if (mode.indexOf('自攻') >= 0 || mode.indexOf('塑料') >= 0) {
+        var g = geos[0];
+        html += '<div class="metrics">';
+        html += '<div class="metric"><div class="label">推荐孔径 d0</div><div class="value">' +
+          (g ? esc(g.d0) : '—') + '<span class="unit">mm</span></div><div class="src">' +
+          esc(g && g.coeffSource) + '</div></div>';
+        html += '<div class="metric"><div class="label">凸台外径 D</div><div class="value">' +
+          (g ? esc(g.D) : (ej ? esc(ej.dT) : '—')) + '<span class="unit">mm</span></div><div class="src">有出处几何</div></div>';
+        html += '<div class="metric"><div class="label">旋合长度 te</div><div class="value">' +
+          (g ? esc(g.te) : (ej ? esc(ej.teMin) : '—')) + '<span class="unit">mm</span></div><div class="src">EJOT te≥2×d1</div></div>';
+        html += '<div class="metric"><div class="label">装配扭矩 MA</div><div class="value" style="font-size:1rem;color:var(--empty)">无公开装配扭矩数据</div><div class="src">须试验</div></div>';
+        html += '</div>';
+        if (g && g.nature) {
+          html += '<div class="cite">性质：' + esc(g.nature) + '</div>';
+        }
+      } else {
+        var rows = (D.torqueMachine && D.torqueMachine.rows) || [];
+        var filtered;
+        if (dia === 5) filtered = rows.filter(function (r) { return String(r.thread).indexOf('M5') === 0; });
+        else if (dia === 6) filtered = rows.filter(function (r) { return String(r.thread).indexOf('M6') === 0; });
+        else {
+          var map = { 2: 'M2', 2.5: 'M2.5', 3: 'M3', 3.5: 'M3.5', 4: 'M4', 4.5: 'M4.5' };
+          var th = map[dia] || '';
+          filtered = rows.filter(function (r) { return String(r.thread) === th; });
+        }
+        html += '<div class="metrics">';
+        html += '<div class="metric"><div class="label">几何</div><div class="value" style="font-size:1rem">按嵌件厂规范</div><div class="src">孔径/凸台按嵌件资料</div></div>';
+        html += '<div class="metric"><div class="label">装配扭矩 MA</div><div class="value" style="font-size:1rem;color:var(--empty)">无公开装配扭矩数据</div><div class="src">Torque-out ≠ 装配扭矩</div></div>';
+        html += '</div><div class="block"><h3>PEM 嵌件脱出扭矩（≠装配扭矩）</h3><div class="pem-grid">';
+        html += filtered.map(function (r) {
+          return '<div class="pem-card"><div class="mat">' + esc(r.thread) + ' · ' + esc(r.baseMaterial) +
+            '</div><div class="to">' + esc(r.torqueOut) + ' <span class="unit">N·m</span></div>' +
+            '<div class="label-to">嵌件脱出扭矩</div><div class="cite">' + esc(r.source) + '</div></div>';
+        }).join('') || '<p>该规格无公开 PEM 数据</p>';
+        html += '</div></div>';
+      }
+      result.innerHTML = html;
+    }
+
+    f.onchange = d1.onchange = mat.onchange = render;
+    render();
+  }
+
+  function go(d) { start(d); }
+  if (window.SCREW_DATA) go(window.SCREW_DATA);
+  else window.addEventListener('screw-data-ready', function () { go(window.SCREW_DATA); });
+})();
