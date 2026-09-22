@@ -1,0 +1,35 @@
+name: Assemble static tool HTML
+on:
+  workflow_dispatch:
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode tarball and write index.html files
+        run: |
+          python3 << 'PY'
+          import base64, pathlib, tarfile, io, hashlib
+          parts = sorted(pathlib.Path('_import').glob('tgz_b64_*.txt'))
+          assert parts, 'missing _import/tgz_b64_*.txt'
+          b64 = ''.join(p.read_text().strip() for p in parts)
+          data = base64.b64decode(b64)
+          print('tgz bytes', len(data), 'sha256', hashlib.sha256(data).hexdigest())
+          buf = io.BytesIO(data)
+          with tarfile.open(fileobj=buf, mode='r:gz') as tar:
+            tar.extractall('.')
+            for m in tar.getmembers():
+              if m.isfile():
+                raw = pathlib.Path(m.name).read_bytes()
+                print('wrote', m.name, len(raw), hashlib.sha256(raw).hexdigest())
+          PY
+      - name: Commit assembled HTML
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add heating-film/index.html cooldown/index.html evaporator/index.html condenser/index.html insulation-holdover/index.html insulation-warmup/index.html
+          git status
+          git commit -m "Assemble full static tool HTML from import tarball" || echo "nothing to commit"
+          git push
