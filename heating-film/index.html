@@ -1,6 +1,33 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"/><title>加热膜功率 — 上传中</title></head>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>加载中…</title>
+</head>
 <body>
-<p><a href="../index.html">← 返回计算汇总</a></p>
-<p>完整计算页待推送（源文件已在构建目录准备好）。</p>
-</body></html>
+  <p id="st" style="font-family:sans-serif;padding:1.5rem">正在加载计算页…</p>
+  <p style="font-family:sans-serif;padding:0 1.5rem"><a href="../index.html">← 返回计算汇总</a></p>
+  <script>
+  (async function () {
+    const st = document.getElementById('st');
+    try {
+      const b64 = await fetch('page.html.gz.b64', { cache: 'no-cache' }).then(r => {
+        if (!r.ok) throw new Error('b64 ' + r.status);
+        return r.text();
+      });
+      const bin = Uint8Array.from(atob(b64.replace(/\s+/g,'')), c => c.charCodeAt(0));
+      const ds = new DecompressionStream('gzip');
+      const stream = new Blob([bin]).stream().pipeThrough(ds);
+      const html = await new Response(stream).text();
+      document.open();
+      document.write(html);
+      document.close();
+    } catch (e) {
+      st.textContent = '加载失败：' + e;
+      st.style.color = '#b00';
+    }
+  })();
+  </script>
+</body>
+</html>
