@@ -1,5 +1,5 @@
 :root {
-  --bg: #f4f6f8;
+  --bg: #ffffff;
   --surface: #ffffff;
   --ink: #1a2332;
   --muted: #5a6a7a;
@@ -26,7 +26,7 @@ body {
   margin: 0;
   font-family: var(--font);
   color: var(--ink);
-  background: var(--bg);
+  background: #ffffff;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
