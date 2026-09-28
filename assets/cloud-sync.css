@@ -1,0 +1,82 @@
+.cloud-bar {
+  font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 13px;
+  color: #0f172a;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  display: grid;
+  gap: 8px;
+}
+.cloud-bar * { box-sizing: border-box; }
+.cloud-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cloud-bar input[type="email"],
+.cloud-bar input[type="text"] {
+  flex: 1;
+  min-width: 160px;
+  padding: 6px 10px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 8px;
+  font: inherit;
+}
+.cloud-bar button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+.cloud-bar button.primary {
+  background: #0f766e;
+  color: #fff;
+  border-color: #0f766e;
+}
+.cloud-bar button:disabled { opacity: 0.5; cursor: not-allowed; }
+.cloud-bar .muted { color: #64748b; font-size: 12px; }
+.cloud-bar .err { color: #be123c; }
+.cloud-bar .ok { color: #047857; }
+.cloud-list { display: grid; gap: 6px; margin-top: 4px; }
+.cloud-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  background: #fff;
+}
+.cloud-item .nm { font-weight: 600; }
+.cloud-item .meta { color: #64748b; font-size: 11px; }
+.cloud-item .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .cloud-bar {
+    color: #e2e8f0;
+    background: #1e293b;
+    border-color: rgba(148, 163, 184, 0.2);
+  }
+  html:not([data-theme="light"]) .cloud-bar input,
+  html:not([data-theme="light"]) .cloud-bar button:not(.primary),
+  html:not([data-theme="light"]) .cloud-item {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-color: rgba(148, 163, 184, 0.25);
+  }
+}
+html[data-theme="dark"] .cloud-bar {
+  color: #e2e8f0;
+  background: #1e293b;
+  border-color: rgba(148, 163, 184, 0.2);
+}
+html[data-theme="dark"] .cloud-bar input,
+html[data-theme="dark"] .cloud-bar button:not(.primary),
+html[data-theme="dark"] .cloud-item {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-color: rgba(148, 163, 184, 0.25);
+}
