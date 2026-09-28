@@ -1,36 +1,5 @@
 {
   "path": "_parts/cooldown/03.txt",
   "expected_blob": "e5589a93ebbb9d363858874e7003de4aad8ba8c3",
-  "fixes": [
-    {
-      "offset": 1149,
-      "from": "2",
-      "to": "3"
-    },
-    {
-      "offset": 1150,
-      "from": "s",
-      "to": "M"
-    },
-    {
-      "offset": 2809,
-      "from": "L",
-      "to": "F"
-    },
-    {
-      "offset": 2916,
-      "from": "5",
-      "to": "7"
-    },
-    {
-      "offset": 2985,
-      "from": "2",
-      "to": "3"
-    },
-    {
-      "offset": 3224,
-      "from": "2",
-      "to": "3"
-    }
-  ]
+  "fixes": []
 }

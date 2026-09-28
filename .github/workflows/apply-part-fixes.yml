@@ -22,16 +22,26 @@ jobs:
           for f in sorted(root.glob('*.json')):
             corr = json.loads(f.read_text())
             path = pathlib.Path(corr['path'])
+            if not path.exists():
+              print('skip missing', path); continue
             data = bytearray(path.read_bytes())
+            cur_blob = hashlib.sha1(b'blob %d\0'%len(data)+bytes(data)).hexdigest()
+            if cur_blob == corr['expected_blob']:
+              print('already ok', path, cur_blob)
+              continue
             for fix in corr['fixes']:
               off = fix['offset']
-              assert chr(data[off]) == fix['from'], (off, chr(data[off]), fix['from'])
+              cur = chr(data[off])
+              if cur == fix['to']:
+                continue
+              if cur != fix['from']:
+                raise SystemExit(f'unexpected at {path}:{off}: got {cur!r} want from={fix["from"]!r} or to={fix["to"]!r}')
               data[off] = ord(fix['to'])
             data = bytes(data)
             blob = hashlib.sha1(b'blob %d\0'%len(data)+data).hexdigest()
             assert blob == corr['expected_blob'], (blob, corr['expected_blob'])
             path.write_bytes(data)
-            print('fixed', path, 'blob', blob)
+            print('fixed', path, 'blob', blob, 'nfixes', len(corr['fixes']))
           PY
       - name: Commit
         run: |
