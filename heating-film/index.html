@@ -8,8 +8,11 @@
 <body>
   <p id="st" style="font-family:sans-serif;padding:1.5rem">正在加载计算页…</p>
   <p style="font-family:sans-serif;padding:0 1.5rem"><a href="../index.html">← 返回计算汇总</a></p>
+  <script src="../assets/cloud-loader-inject.js"></script>
   <script>
   (async function () {
+    const TOOL = 'heating-film';
+    const LOCAL_KEY = 'heatfilm-schemes-v1';
     const st = document.getElementById('st');
     try {
       const b64 = await fetch('page.html.gz.b64', { cache: 'no-cache' }).then(r => {
@@ -19,7 +22,10 @@
       const bin = Uint8Array.from(atob(b64.replace(/\s+/g,'')), c => c.charCodeAt(0));
       const ds = new DecompressionStream('gzip');
       const stream = new Blob([bin]).stream().pipeThrough(ds);
-      const html = await new Response(stream).text();
+      let html = await new Response(stream).text();
+      if (window.CloudLoaderInject) {
+        html = window.CloudLoaderInject.inject(html, { tool: TOOL, localKey: LOCAL_KEY });
+      }
       document.open();
       document.write(html);
       document.close();

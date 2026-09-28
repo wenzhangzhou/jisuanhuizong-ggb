@@ -16,3 +16,10 @@
 - **A（本阶段）**：共享 `assets/tokens.css` + `assets/shell.css`；首页去花瓣 / 玻璃 / featured，等宽网格
 - **B（待做）**：热负荷与大页 token 对齐；参数渐进披露
 - **C（待做）**：凝露、螺钉迁入 shell
+
+## 云同步
+
+- 新工具若需方案云同步：引用 `assets/cloud-sync.js`，调用 `mountSchemePanel({ tool, getState, applyState })`
+- gzip 单页：在 `index.html` 加载器中用 `CloudLoaderInject.inject(html, { tool, localKey })`
+- 勿把 service_role 写入前端
+
