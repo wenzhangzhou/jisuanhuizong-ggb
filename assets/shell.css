@@ -1,0 +1,104 @@
+/**
+ * 计算汇总 · 共享页壳（返回链、基础卡片/按钮/焦点）
+ * 阶段 A：首页已用；阶段 B/C 工具页逐步引用。
+ */
+@import url("./tokens.css");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--sans);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.5;
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+/* 返回计算汇总 */
+.hub-back {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.hub-back a {
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.hub-back a:hover {
+  color: var(--teal);
+  text-decoration: underline;
+}
+
+.hub-back a:focus-visible {
+  border-radius: 4px;
+}
+
+/* 基础卡片 */
+.ui-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 按钮层级 */
+.ui-btn {
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid var(--line-strong);
+  background: var(--card);
+  color: var(--text);
+  border-radius: var(--radius-ctrl);
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.ui-btn:hover {
+  border-color: var(--teal);
+}
+
+.ui-btn--primary {
+  border-color: rgba(15, 118, 110, 0.35);
+  color: var(--teal);
+  font-weight: 700;
+  background: linear-gradient(180deg, var(--teal-dim), var(--card));
+}
+
+.ui-btn--danger {
+  color: var(--rose);
+}
+
+.ui-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
