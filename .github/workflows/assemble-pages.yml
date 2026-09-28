@@ -1,0 +1,63 @@
+name: Assemble page.html.gz.b64 from parts
+on:
+  push:
+    paths:
+      - '_parts/**'
+      - '.github/workflows/assemble-pages.yml'
+  workflow_dispatch:
+    inputs:
+      page:
+        description: 'Page to assemble (heating-film, cooldown, condenser, insulation-holdover, evaporator, or all)'
+        required: true
+        default: 'all'
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble parts into page.html.gz.b64
+        run: |
+          set -euo pipefail
+          PAGE_INPUT="${{ github.event.inputs.page || 'all' }}"
+          if [ "$PAGE_INPUT" = "all" ]; then
+            PAGES="heating-film cooldown condenser insulation-holdover evaporator"
+          else
+            PAGES="$PAGE_INPUT"
+          fi
+          for page in $PAGES; do
+            dir="_parts/$page"
+            if [ ! -d "$dir" ]; then
+              echo "skip missing $dir"
+              continue
+            fi
+            out="$page/page.html.gz.b64"
+            mkdir -p "$page"
+            : > "$out"
+            for f in $(ls "$dir"/*.txt | sort); do
+              cat "$f" >> "$out"
+            done
+            len=$(wc -c < "$out")
+            head=$(head -c 20 "$out")
+            echo "assembled $out len=$len head=$head"
+            if [ "$len" -lt 1000 ]; then
+              echo "ERROR: assembled file too short"
+              exit 1
+            fi
+            case "$head" in
+              H4s*) ;;
+              *) echo "ERROR: does not start with H4s"; exit 1 ;;
+            esac
+          done
+      - name: Commit assembled pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add */page.html.gz.b64 || true
+          if git diff --staged --quiet; then
+            echo "No change"
+          else
+            git commit -m "build: assemble page.html.gz.b64 from _parts"
+            git push
+          fi
