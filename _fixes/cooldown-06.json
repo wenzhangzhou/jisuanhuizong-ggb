@@ -1,0 +1,11 @@
+{
+  "path": "_parts/cooldown/06.txt",
+  "expected_blob": "4d630c59f7094dc006f126082f870e38dc2983a9",
+  "fixes": [
+    {
+      "offset": 2284,
+      "from": "L",
+      "to": "K"
+    }
+  ]
+}
