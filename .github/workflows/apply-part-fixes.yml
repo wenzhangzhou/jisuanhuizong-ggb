@@ -1,0 +1,44 @@
+name: Apply part byte fixes
+on:
+  push:
+    paths:
+      - '_fixes/**'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply offset fixes
+        run: |
+          set -euo pipefail
+          python3 << 'PY'
+          import json, hashlib, pathlib
+          root = pathlib.Path('_fixes')
+          if not root.exists():
+            print('no _fixes'); raise SystemExit(0)
+          for f in sorted(root.glob('*.json')):
+            corr = json.loads(f.read_text())
+            path = pathlib.Path(corr['path'])
+            data = bytearray(path.read_bytes())
+            for fix in corr['fixes']:
+              off = fix['offset']
+              assert chr(data[off]) == fix['from'], (off, chr(data[off]), fix['from'])
+              data[off] = ord(fix['to'])
+            data = bytes(data)
+            blob = hashlib.sha1(b'blob %d\0'%len(data)+data).hexdigest()
+            assert blob == corr['expected_blob'], (blob, corr['expected_blob'])
+            path.write_bytes(data)
+            print('fixed', path, 'blob', blob)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _parts/ || true
+          if git diff --staged --quiet; then echo No change; else
+            git commit -m "fix: apply _fixes byte patches to _parts"
+            git push
+          fi
