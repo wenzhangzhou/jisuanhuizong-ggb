@@ -13,7 +13,8 @@
 .cloud-bar * { box-sizing: border-box; }
 .cloud-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .cloud-bar input[type="email"],
-.cloud-bar input[type="text"] {
+.cloud-bar input[type="text"],
+.cloud-bar input[type="password"] {
   flex: 1;
   min-width: 160px;
   padding: 6px 10px;
