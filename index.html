@@ -8,73 +8,82 @@
   <link rel="stylesheet" href="hub.css" />
 </head>
 <body>
-  <header class="app-header">
-    <div class="wrap">
+  <div class="page-bg" aria-hidden="true"></div>
+  <div class="page-veil" aria-hidden="true"></div>
+  <canvas id="petal-canvas" aria-hidden="true"></canvas>
+
+  <div class="shell">
+    <header class="hero">
+      <p class="hero-eyebrow">Engineering tools</p>
       <h1>计算汇总</h1>
-    </div>
-  </header>
-  <main class="wrap">
+      <p class="hero-lead">车载冰箱与结构相关的工程参考计算，点选进入。</p>
+    </header>
+
     <div class="banner" role="note">
-      <strong>说明：</strong>
-      以下工具仅供工程参考，不替代试验与正式校核。
+      <strong>说明</strong>
+      <span>以下工具仅供工程参考，不替代试验与正式校核。</span>
     </div>
-    <section class="cards">
-      <a class="card" href="condensation/index.html">
+
+    <section class="cards" aria-label="计算工具入口">
+      <a class="card card--featured accent-pink" href="condensation/index.html" style="--i:0">
         <div class="card-kicker">热工</div>
         <h2>凝露计算</h2>
         <p>根据环境温湿度与发泡 / VIP 厚度，校核箱体外表面是否满足防凝露要求。</p>
-        <span class="card-action">进入计算 →</span>
+        <span class="card-action">进入计算</span>
       </a>
-      <a class="card" href="screw/index.html">
+      <a class="card accent-peach" href="screw/index.html" style="--i:1">
         <div class="card-kicker">紧固</div>
         <h2>螺钉计算</h2>
         <p>≤Ø6 塑料自攻 / 机牙嵌件选型：孔径、凸台、旋合与有出处扭矩汇总。</p>
-        <span class="card-action">进入计算 →</span>
+        <span class="card-action">进入计算</span>
       </a>
-      <a class="card" href="heating-film/index.html">
+      <a class="card accent-gold" href="heating-film/index.html" style="--i:2">
         <div class="card-kicker">热工</div>
         <h2>加热膜功率</h2>
         <p>车载 / 冷暖箱加热膜功率选型与热平衡计算。</p>
-        <span class="card-action">进入计算 →</span>
+        <span class="card-action">进入计算</span>
       </a>
-      <a class="card" href="cooldown/index.html">
+      <a class="card accent-teal" href="cooldown/index.html" style="--i:3">
         <div class="card-kicker">制冷</div>
         <h2>空载降温核算</h2>
         <p>车载压缩机冰箱空载降温速度与制冷性能核算。</p>
-        <span class="card-action">进入计算 →</span>
+        <span class="card-action">进入计算</span>
       </a>
-      <a class="card" href="evaporator/index.html">
+      <a class="card accent-lilac" href="evaporator/index.html" style="--i:4">
         <div class="card-kicker">换热器</div>
         <h2>板管蒸发器</h2>
         <p>贴片式板管蒸发器工程面积与管长计算。</p>
-        <span class="card-action">进入计算 →</span>
+        <span class="card-action">进入计算</span>
       </a>
-      <a class="card" href="condenser/index.html">
+      <a class="card accent-mint" href="condenser/index.html" style="--i:5">
         <div class="card-kicker">换热器</div>
         <h2>丝管冷凝器</h2>
         <p>丝管冷凝器换热面积与盘管总长计算。</p>
-        <span class="card-action">进入计算 →</span>
+        <span class="card-action">进入计算</span>
       </a>
-      <a class="card" href="heat-load/index.html">
+      <a class="card accent-coral" href="heat-load/index.html" style="--i:6">
         <div class="card-kicker">热工</div>
         <h2>箱体热负荷</h2>
         <p>车载冰箱箱体热负荷工程估算：保温、门封热桥、换气与拉温。</p>
-        <span class="card-action">进入计算 →</span>
+        <span class="card-action">进入计算</span>
       </a>
-      <a class="card" href="insulation-holdover/index.html">
+      <a class="card accent-sky" href="insulation-holdover/index.html" style="--i:7">
         <div class="card-kicker">保温</div>
         <h2>断电回温 ≥120 min</h2>
         <p>箱体断电保温性能：回温校核与达标反推。</p>
-        <span class="card-action">进入计算 →</span>
+        <span class="card-action">进入计算</span>
       </a>
-      <a class="card" href="insulation-warmup/index.html">
+      <a class="card accent-rose" href="insulation-warmup/index.html" style="--i:8">
         <div class="card-kicker">保温</div>
         <h2>保温校核（断电回温）</h2>
         <p>箱体保温性能校核（断电回温）。</p>
-        <span class="card-action">进入计算 →</span>
+        <span class="card-action">进入计算</span>
       </a>
     </section>
-  </main>
-  <footer class="app-footer wrap">jisuanhuizong-ggb · GitHub Pages</footer>
+
+    <footer class="app-footer">jisuanhuizong-ggb · GitHub Pages</footer>
+  </div>
+
+  <script src="hub.js" defer></script>
 </body>
 </html>
