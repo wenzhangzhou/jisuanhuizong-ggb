@@ -6,6 +6,7 @@
   <title>≤Ø6 螺钉选型 — 公开证据汇总</title>
   <meta name="description" content="塑料自攻 / 机牙嵌件螺钉选型：孔径、凸台、旋合与有出处扭矩汇总。仅公开数据，非设计保证。" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="../assets/cloud-sync.css" />
 </head>
 <body>
   <header class="app-header">
@@ -16,6 +17,7 @@
     </div>
   </header>
   <main class="wrap">
+    <div id="cloudMount"></div>
     <div class="banner" role="note">
       <strong>声明：</strong>
       <span id="disclaimer">仅汇总公开供应商/标准数据，非设计保证；空值需试验或供应商 CALC；GF/LGF 几何可能为最邻近材料近似</span>
@@ -58,5 +60,19 @@
   </main>
   <script src="data.loader.js"></script>
   <script src="app.js"></script>
+
+  <script type="module">
+    import * as Cloud from '../assets/cloud-sync.js';
+    Cloud.init();
+    Cloud.mountSchemePanel({
+      tool: 'screw',
+      container: document.getElementById('cloudMount'),
+      getState: () => window.ScrewBridge ? window.ScrewBridge.getState() : Cloud.scrapeFormState(),
+      applyState: (s) => {
+        if (window.ScrewBridge) window.ScrewBridge.applyState(s);
+        else Cloud.applyFormState(s);
+      }
+    });
+  </script>
 </body>
 </html>

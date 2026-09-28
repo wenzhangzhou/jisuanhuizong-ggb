@@ -6,6 +6,7 @@
   <title>冰箱箱体防凝露校核</title>
   <meta name="description" content="根据环境温湿度与发泡/VIP厚度，校核冰箱箱体外表面是否满足防凝露要求。纯前端在线计算。" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="../assets/cloud-sync.css" />
 </head>
 <body>
   <header class="app-header">
@@ -17,6 +18,7 @@
   </header>
 
   <main class="wrap">
+    <div id="cloudMount"></div>
     <div class="banner" role="note">
       <strong>说明：</strong>
       本工具为稳态一维传热简化校核，用于方案初判；未计入门封、结构热桥、强迫对流等。结果仅供工程参考，不作合格保证。
@@ -107,5 +109,20 @@
   </main>
 
   <script src="app.js"></script>
+  <script type="module">
+    import * as Cloud from '../assets/cloud-sync.js';
+    Cloud.init();
+    Cloud.mountSchemePanel({
+      tool: 'condensation',
+      container: document.getElementById('cloudMount'),
+      getState: () => window.CondensationBridge
+        ? window.CondensationBridge.getState()
+        : Cloud.scrapeFormState(),
+      applyState: (s) => {
+        if (window.CondensationBridge) window.CondensationBridge.applyState(s);
+        else Cloud.applyFormState(s);
+      }
+    });
+  </script>
 </body>
 </html>
