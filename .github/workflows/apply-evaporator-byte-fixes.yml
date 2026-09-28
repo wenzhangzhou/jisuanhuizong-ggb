@@ -1,0 +1,49 @@
+name: Apply evaporator byte fixes
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply surgical byte fixes and verify
+        run: |
+          python3 << 'PY'
+          from pathlib import Path
+          import hashlib
+          def git_blob_sha(data: bytes) -> str:
+              return hashlib.sha1(b"blob %d" % len(data) + bytes([0]) + data).hexdigest()
+          fixes = [
+            ("_parts/evaporator/00.txt", 1428, "S"),
+            ("_parts/evaporator/02.txt", 510, "l"),
+            ("_parts/evaporator/02.txt", 588, "X"),
+            ("_parts/evaporator/04.txt", 2197, "U"),
+            ("_parts/evaporator/05.txt", 2373, "O"),
+            ("_parts/evaporator/05.txt", 2374, "S"),
+            ("_parts/evaporator/06.txt", 237, "9"),
+            ("_parts/evaporator/06.txt", 1611, "9"),
+          ]
+          for path, off, ch in fixes:
+              p = Path(path)
+              data = bytearray(p.read_bytes())
+              print(f"fix {path} @{off}: {chr(data[off])!r} -> {ch!r}")
+              data[off] = ord(ch)
+              p.write_bytes(bytes(data))
+          expected = {"00": "037a69492da5d2479cd8ac11208e700af55bb73f", "01": "351b77e338ce0bb661d59b3feb2c9cd8581540cd", "02": "1b51b5d96ee0a98b00bd17a22e5a2c2457aad3e3", "03": "7ceedd2021416bb9b351f095c2091fc73f79db9b", "04": "d3bed0b4c9f8c7820c23e9ef913c791ac2d579d7", "05": "c31ecb95b8ae3ca1ed952a6610533d9b224597c4", "06": "547d12cbb9191499fd1368b6baaf5ff5d2ee72c6"}
+          for part, blob in expected.items():
+              data = Path(f"_parts/evaporator/{part}.txt").read_bytes()
+              got = git_blob_sha(data)
+              assert got == blob, (part, got, blob, len(data))
+              print("OK", part, len(data), got)
+          Path("_parts/evaporator/MANIFEST.json").write_text("{\n  \"path\": \"evaporator/page.html.gz.b64\",\n  \"n_parts\": 7,\n  \"total_len\": 24129,\n  \"message\": \"fix(ui): restore evaporator page \\u2014 remove header PDF/Excel dup\"\n}")
+          print("MANIFEST written", len(Path("_parts/evaporator/MANIFEST.json").read_bytes()))
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _parts/evaporator/
+          git commit -m "fix: surgical byte-correct evaporator _parts + MANIFEST" || echo "no change"
+          git push
