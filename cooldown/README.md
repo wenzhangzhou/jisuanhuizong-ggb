@@ -2,4 +2,4 @@
 
 路径：`/cooldown/`
 
-源文件已整理为单页 `index.html`（内联样式与脚本）。
+单页经 `index.html` 加载 `page.html.gz.b64`（gzip+base64）。支持压缩机手动 Q₀，以及半导体直冷 / 蓄冷（PCM）/ 共享液冷热端等 TEC 型式。
