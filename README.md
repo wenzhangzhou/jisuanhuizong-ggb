@@ -9,6 +9,7 @@ GitHub Pages 静态站（`main` 根目录）：
 - `/cooldown/`：空载降温与制冷性能核算
 - `/evaporator/`：贴片式板管蒸发器面积与管长
 - `/condenser/`：丝管冷凝器换热面积与管长
+- `/heat-load/`：车载冰箱箱体热负荷工程估算
 - `/insulation-holdover/`：断电保温 · 回温 ≥120 min 校核与反推
 - `/insulation-warmup/`：箱体保温性能校核（断电回温）
 
