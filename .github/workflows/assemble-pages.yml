@@ -18,38 +18,46 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Assemble parts into page.html.gz.b64
+        env:
+          PAGE_INPUT: ${{ github.event.inputs.page || 'all' }}
         run: |
           set -euo pipefail
-          PAGE_INPUT="${{ github.event.inputs.page || 'all' }}"
-          if [ "$PAGE_INPUT" = "all" ]; then
-            PAGES="heating-film cooldown condenser insulation-holdover evaporator"
-          else
-            PAGES="$PAGE_INPUT"
-          fi
-          for page in $PAGES; do
-            dir="_parts/$page"
-            if [ ! -d "$dir" ]; then
-              echo "skip missing $dir"
+          python3 << 'PY'
+          import json, pathlib, os
+          page_input = os.environ.get("PAGE_INPUT") or "all"
+          if page_input == "all":
+            pages = ["heating-film", "cooldown", "condenser", "insulation-holdover", "evaporator"]
+          else:
+            pages = [page_input]
+          for page in pages:
+            dirp = pathlib.Path(f"_parts/{page}")
+            if not dirp.is_dir():
+              print("skip missing", dirp)
               continue
-            fi
-            out="$page/page.html.gz.b64"
-            mkdir -p "$page"
-            : > "$out"
-            for f in $(ls "$dir"/*.txt | sort); do
-              cat "$f" >> "$out"
-            done
-            len=$(wc -c < "$out")
-            head=$(head -c 20 "$out")
-            echo "assembled $out len=$len head=$head"
-            if [ "$len" -lt 1000 ]; then
-              echo "ERROR: assembled file too short"
-              exit 1
-            fi
-            case "$head" in
-              H4s*) ;;
-              *) echo "ERROR: does not start with H4s"; exit 1 ;;
-            esac
-          done
+            parts = sorted(dirp.glob("*.txt"))
+            data = b"".join(p.read_bytes() for p in parts)
+            man_path = dirp / "MANIFEST.json"
+            if man_path.exists():
+              man = json.loads(man_path.read_text())
+              n = man.get("n_parts")
+              total = man.get("total_len")
+              if n is not None and len(parts) != n:
+                print(f"SKIP {page}: have {len(parts)} parts, need {n}")
+                continue
+              if total is not None and len(data) != total:
+                print(f"SKIP {page}: len {len(data)} != total_len {total}")
+                continue
+            if len(data) < 1000:
+              print(f"SKIP {page}: too short {len(data)}")
+              continue
+            if not data.startswith(b"H4s"):
+              print(f"SKIP {page}: bad head {data[:20]!r}")
+              continue
+            out = pathlib.Path(f"{page}/page.html.gz.b64")
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_bytes(data)
+            print(f"assembled {out} len={len(data)} head={data[:20]!r}")
+          PY
       - name: Commit assembled pages
         run: |
           git config user.name "github-actions[bot]"
