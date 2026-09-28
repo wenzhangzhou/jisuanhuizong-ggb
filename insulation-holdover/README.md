@@ -1,4 +1,4 @@
-# 断电回温 ≥120 min
+# 保温校核（断电回温）
 
 路径：`/insulation-holdover/`
 
