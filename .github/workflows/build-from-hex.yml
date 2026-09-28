@@ -1,0 +1,61 @@
+name: Build parts from hex fix batches
+on:
+  push:
+    paths:
+      - '_hex/**'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'page-part like cooldown-04, or all'
+        required: true
+        default: 'all'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble hex batches into _parts
+        run: |
+          set -euo pipefail
+          python3 << 'PY'
+          import json, hashlib, pathlib, os
+          root = pathlib.Path('_hex')
+          if not root.exists():
+            print('no _hex'); raise SystemExit(0)
+          target = os.environ.get('TARGET', 'all')
+          for meta_path in sorted(root.glob('*/META.json')):
+            page_part = meta_path.parent.name  # e.g. cooldown-04
+            if target != 'all' and page_part != target:
+              continue
+            meta = json.loads(meta_path.read_text())
+            chunks = []
+            for f in sorted(meta_path.parent.glob('batch-*.json')):
+              batch = json.loads(f.read_text())
+              for c in batch['chunks']:
+                piece = bytes.fromhex(c['hex'])
+                h12 = hashlib.sha256(piece).hexdigest()[:12]
+                assert h12 == c['sha'], (f, c['i'], h12, c['sha'])
+                chunks.append((c['i'], piece))
+            chunks.sort(key=lambda x: x[0])
+            assert len(chunks) == meta['n'], (len(chunks), meta['n'])
+            data = b''.join(p for _,p in chunks)
+            blob = hashlib.sha1(b'blob %d\0'%len(data)+data).hexdigest()
+            assert blob == meta['expected_blob'], (blob, meta['expected_blob'])
+            out = pathlib.Path(meta['path'])
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_bytes(data)
+            print('wrote', out, 'len', len(data), 'blob', blob)
+          PY
+        env:
+          TARGET: ${{ github.event.inputs.target || 'all' }}
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _parts/ || true
+          if git diff --staged --quiet; then echo No change; else
+            git commit -m "build: write _parts from verified _hex batches"
+            git push
+          fi
