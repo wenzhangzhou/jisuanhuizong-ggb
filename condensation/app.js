@@ -128,6 +128,32 @@
     calc();
   }
 
+
+  var FIELD_IDS = ['ta', 'rh', 'tiMode', 'tiCustom', 'df', 'vipMode', 'dv', 'lf', 'lv', 'ho', 'hi', 'margin'];
+
+  window.CondensationBridge = {
+    getState: function () {
+      var inputs = {};
+      FIELD_IDS.forEach(function (id) {
+        var el = $(id);
+        if (el) inputs[id] = el.value;
+      });
+      return {
+        name: '凝露 ' + (inputs.ta || '') + '℃ / RH' + (inputs.rh || '') + ' / ' + (inputs.df || '') + 'mm',
+        inputs: inputs,
+        snapshot: {}
+      };
+    },
+    applyState: function (state) {
+      var inputs = (state && state.inputs) || {};
+      FIELD_IDS.forEach(function (id) {
+        if (inputs[id] != null && $(id)) $(id).value = inputs[id];
+      });
+      syncVisibility();
+      calc();
+    }
+  };
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', bind);
   } else {
