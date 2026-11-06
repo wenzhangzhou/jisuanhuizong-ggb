@@ -1,9 +1,32 @@
 /**
  * jisuanhuizong-ggb · 自建服务器方案云同步
- * API_BASE 指向 HTTPS 自建后端；注册免邮箱验证码。
+ * API_BASE 默认按页面同源推断（/jisuan → /jisuan/api）；注册免邮箱验证码。
  */
-const DEFAULT_API_BASE = 'https://114.66.0.89.sslip.io';
 const TOKEN_KEY = 'jisuan-cloud-token-v1';
+
+/** 推断 API 根：自建站挂在 /jisuan/ 时为 origin+/jisuan；也可 init({apiBase}) 覆盖 */
+function detectApiBase() {
+  try {
+    const loc = window.location;
+    const origin = loc.origin;
+    const path = loc.pathname || '';
+    if (origin && origin !== 'null') {
+      if (path === '/jisuan' || path.startsWith('/jisuan/')) {
+        return origin.replace(/\/$/, '') + '/jisuan';
+      }
+      // 本地 python -m http.server 等：同源根路径也可挂 /api（少见）
+      if (loc.protocol === 'http:' || loc.protocol === 'https:') {
+        // file:// 无 origin 可用；GitHub Pages 不再作为入口
+        if (!/github\.io$/i.test(loc.hostname)) {
+          return origin.replace(/\/$/, '') + '/jisuan';
+        }
+      }
+    }
+  } catch (_) {}
+  return '';
+}
+
+const DEFAULT_API_BASE = detectApiBase();
 const MIGRATE_FLAG_PREFIX = 'cloud-migrated:';
 const USERNAME_RE = /^[A-Za-z0-9][A-Za-z0-9\-_.:+@]{4,23}$/;
 
@@ -95,7 +118,7 @@ async function api(path, opts = {}) {
     throw new Error(
       '无法连接云端 API（' +
         API_BASE +
-        '）。请确认服务器已开 HTTPS/443，或检查网络。' +
+        '）。请用自建地址 http://服务器:8081/jisuan/ 打开本站，并确认 /jisuan/api/health 正常。' +
         (e && e.message ? ' ' + e.message : '')
     );
   }
@@ -135,6 +158,7 @@ export function canManageCloud() {
 /** @param {{apiBase?: string}} [opts] */
 export function init(opts = {}) {
   if (opts.apiBase) API_BASE = String(opts.apiBase).replace(/\/$/, '');
+  else if (!API_BASE) API_BASE = detectApiBase();
   const token = loadToken();
   if (token) {
     session = { access_token: token, user: null };

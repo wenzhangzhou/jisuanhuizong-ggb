@@ -136,7 +136,7 @@
         }
       } catch (e) {
         el.className = 'meta-line status-err';
-        el.textContent = '健康检查失败：无法连接（多半是 443 未放行或证书未就绪）。降级可测 http://114.66.0.89:8081/jisuan-api/health ，但 GitHub Pages 不能调明文 HTTP。';
+        el.textContent = '健康检查失败：无法连接。请确认用自建地址打开（如 http://服务器IP:8081/jisuan/），并检查 /jisuan/api/health。';
       }
     }
     probeHealth();
