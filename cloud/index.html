@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>数据上云 · 计算汇总</title>
+  <meta name="description" content="自建服务器方案云同步：登录、查看各工具云端方案。" />
+  <link rel="stylesheet" href="../hub.css" />
+  <style>
+    .cloud-page { display: grid; gap: 1rem; }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1rem 1.15rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .panel h2 { margin: 0 0 0.5rem; font-size: 1.05rem; }
+    .meta-line { color: var(--muted); font-size: 0.9rem; word-break: break-all; }
+    .meta-line code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.85em;
+      background: rgba(15,23,42,.05);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+      gap: 0.65rem;
+      margin-top: 0.75rem;
+    }
+    .tool-chip {
+      display: block;
+      padding: 0.75rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: #fff;
+      text-decoration: none;
+      color: inherit;
+    }
+    .tool-chip:hover { border-color: var(--line-strong); }
+    .tool-chip strong { display: block; font-size: 0.95rem; }
+    .tool-chip span { color: var(--muted); font-size: 0.8rem; }
+    .scheme-rows { display: grid; gap: 0.5rem; margin-top: 0.75rem; }
+    .scheme-row {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: space-between;
+      align-items: center; padding: 0.65rem 0.75rem;
+      border: 1px solid var(--line); border-radius: 10px; background: #fff;
+    }
+    .scheme-row .nm { font-weight: 650; }
+    .scheme-row .meta { color: var(--muted); font-size: 0.8rem; }
+    .status-ok { color: #047857; }
+    .status-err { color: #be123c; }
+    .status-muted { color: var(--muted); }
+    .hub-back {
+      display: inline-block; margin-bottom: 0.75rem;
+      color: var(--teal); text-decoration: none; font-weight: 650; font-size: 0.9rem;
+    }
+    .hub-back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <a class="hub-back" href="../index.html">← 返回计算汇总</a>
+    <header class="hero">
+      <h1>数据上云</h1>
+      <p class="hero-lead">方案保存在你自己的服务器上。注册免邮箱验证码；各计算页也可直接登录同步。</p>
+    </header>
+
+    <div class="cloud-page">
+      <section class="panel">
+        <h2>服务器</h2>
+        <p class="meta-line">API 基址：<code id="apiBase">—</code></p>
+        <p class="meta-line" id="healthLine">健康检查：检测中…</p>
+      </section>
+
+      <section class="panel">
+        <h2>账号</h2>
+        <div id="authHost"></div>
+      </section>
+
+      <section class="panel">
+        <h2>工具入口</h2>
+        <p class="meta-line">进入工具页后可保存 / 载入云端方案。</p>
+        <div class="tool-grid" id="toolGrid"></div>
+      </section>
+
+      <section class="panel">
+        <h2>我的云端方案</h2>
+        <p class="meta-line" id="schemesStatus">登录后显示各工具方案概览。</p>
+        <div class="scheme-rows" id="schemeRows"></div>
+      </section>
+    </div>
+
+    <footer class="app-footer">jisuanhuizong-ggb · 自建云同步</footer>
+  </div>
+  <script type="module">
+    import * as Cloud from '../assets/cloud-sync.js';
+
+    const TOOLS = [
+      { id: 'condensation', name: '凝露计算', href: '../condensation/index.html' },
+      { id: 'screw', name: '螺钉计算', href: '../screw/index.html' },
+      { id: 'heating-film', name: '加热膜功率', href: '../heating-film/index.html' },
+      { id: 'cooldown', name: '空载降温', href: '../cooldown/index.html' },
+      { id: 'evaporator', name: '板管蒸发器', href: '../evaporator/index.html' },
+      { id: 'condenser', name: '丝管冷凝器', href: '../condenser/index.html' },
+      { id: 'heat-load', name: '箱体热负荷', href: '../heat-load/index.html' },
+      { id: 'insulation-holdover', name: '保温校核', href: '../insulation-holdover/index.html' },
+    ];
+
+    Cloud.init();
+    document.getElementById('apiBase').textContent = Cloud.getApiBase();
+    Cloud.mountAuthBar(document.getElementById('authHost'));
+
+    const grid = document.getElementById('toolGrid');
+    TOOLS.forEach((t) => {
+      const a = document.createElement('a');
+      a.className = 'tool-chip';
+      a.href = t.href;
+      a.innerHTML = '<strong>' + t.name + '</strong><span>' + t.id + '</span>';
+      grid.appendChild(a);
+    });
+
+    async function probeHealth() {
+      const el = document.getElementById('healthLine');
+      try {
+        const res = await fetch(Cloud.getApiBase().replace(/\/$/, '') + '/api/health', { mode: 'cors' });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          el.className = 'meta-line status-ok';
+          el.textContent = '健康检查：正常 · ' + (data.time || '');
+        } else {
+          el.className = 'meta-line status-err';
+          el.textContent = '健康检查：异常 HTTP ' + res.status;
+        }
+      } catch (e) {
+        el.className = 'meta-line status-err';
+        el.textContent = '健康检查失败：无法连接（多半是 443 未放行或证书未就绪）。降级可测 http://114.66.0.89:8081/jisuan-api/health ，但 GitHub Pages 不能调明文 HTTP。';
+      }
+    }
+    probeHealth();
+
+    async function refreshSchemes() {
+      const status = document.getElementById('schemesStatus');
+      const rows = document.getElementById('schemeRows');
+      rows.innerHTML = '';
+      const user = Cloud.getUser();
+      if (!user) {
+        status.textContent = '登录后显示各工具方案概览。';
+        return;
+      }
+      status.textContent = '加载中…';
+      try {
+        const list = await Cloud.listAllSchemes();
+        if (!list.length) {
+          status.textContent = '云端暂无方案。可到各工具页保存。';
+          return;
+        }
+        const byTool = {};
+        list.forEach((s) => {
+          byTool[s.tool] = (byTool[s.tool] || 0) + 1;
+        });
+        status.textContent = '共 ' + list.length + ' 条 · ' + Object.keys(byTool).map((k) => k + '×' + byTool[k]).join('，');
+        list.slice(0, 40).forEach((s) => {
+          const tool = TOOLS.find((t) => t.id === s.tool);
+          const div = document.createElement('div');
+          div.className = 'scheme-row';
+          const left = document.createElement('div');
+          left.innerHTML = '<div class="nm">' + (s.name || '未命名') + '</div><div class="meta">' +
+            (s.tool || '') + (s.updated_at ? ' · ' + new Date(s.updated_at).toLocaleString('zh-CN') : '') + '</div>';
+          const a = document.createElement('a');
+          a.href = tool ? tool.href : '../index.html';
+          a.textContent = '打开工具';
+          a.style.fontWeight = '650';
+          a.style.color = 'var(--teal)';
+          a.style.textDecoration = 'none';
+          div.appendChild(left);
+          div.appendChild(a);
+          rows.appendChild(div);
+        });
+      } catch (e) {
+        status.className = 'meta-line status-err';
+        status.textContent = e.message || String(e);
+      }
+    }
+
+    Cloud.onAuthChange(() => refreshSchemes());
+  </script>
+</body>
+</html>

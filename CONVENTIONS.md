@@ -19,7 +19,8 @@
 
 ## 云同步
 
+- 后端为自建 Node API（非 CloudBase / Supabase）；前端只打 HTTPS `API_BASE`
 - 新工具若需方案云同步：引用 `assets/cloud-sync.js`，调用 `mountSchemePanel({ tool, getState, applyState })`
 - gzip 单页：在 `index.html` 加载器中用 `CloudLoaderInject.inject(html, { tool, localKey })`
-- 勿把 service_role 写入前端
+- 勿把 JWT_SECRET 或服务器凭证写入前端
 
